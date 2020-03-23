@@ -1,0 +1,51 @@
+;frequency of occurence of a charecter in a string
+
+
+data segment
+     string db 20
+     len db 00
+     str db 20 dup('$')
+     nextline db 0ah,0dh,'$'
+     count db 00
+ data ends
+
+
+ code segment
+ assume cs:code,ds:data
+ start:mov ax,data
+       mov ds,ax
+
+       mov dx,offset string          ;enter the string
+       mov ah,0ah
+       int 21h
+
+       mov dx,offset nextline        ;next line indicating end of input string
+
+       mov ah,09h                    ;enter a charecter
+       int 21h
+       
+
+       mov ah,01h
+       int 21h
+
+       mov cl,00                     ;count=0
+       mov si,offset str
+again: cmp [si],al                   ;charecter comparision
+       jne nextchar                  
+       inc cl                        
+
+  nextchar:inc si
+           dec len
+           
+           jz stop                   ;end of string comparision
+           jmp again
+
+    stop:mov dl,cl
+         add dl,30h
+         mov ah,02h
+         int 21h
+         mov ah,4ch
+         int 21h
+         code ends
+         end start
+

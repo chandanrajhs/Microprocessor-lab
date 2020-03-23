@@ -1,0 +1,39 @@
+;chech whether the number is prime or not
+
+data segment
+     a db 0ch
+     msg1 db "prime num$"
+     msg2 db "not a prime num$"
+data ends
+
+code segment
+     assume cs:code,ds:data
+     start: mov ax,data
+            mov ds,ax
+
+            mov al,a
+            mov ah,00
+            mov cx,ax
+            shr ax,1          ;last value of i=n/2
+            mov bl,al          
+            mov bh,02         ;initialization of i=2
+     next:cmp bh,bl           ;condition check i<(n/2)
+          jg prime
+          mov ax,cx
+          div bh
+          cmp ah,00           ;remainder=0
+          je nonprime
+          inc bh
+          jmp next
+
+    prime:mov dx,offset msg1     ;prime
+          jmp last
+
+    nonprime:mov dx,offset msg2   ;not prime
+
+    last:mov ah,09h
+         int 21h
+         mov ah,4ch
+         int 21h
+         code ends
+         end start

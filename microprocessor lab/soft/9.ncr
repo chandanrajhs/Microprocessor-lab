@@ -1,0 +1,58 @@
+;ALP to compute ncr using recursive preocedure.
+
+data segment
+     n db 6
+     r db 4
+     res db 0
+
+ data ends
+
+ code segment
+ assume cs:code,ds:data
+ start: mov ax,data
+        mov ds,ax
+
+        mov al,n               ;al=n
+        mov bl,r               ;bl=r
+        call ncr
+        int 3h
+
+        ncr proc near          ;if r=0
+        cmp bl,00h
+        jne l1
+        add res,01h
+        ret
+
+    l1:cmp al,bl              ;if n=r
+       jne l2
+       add res,01h
+       ret
+
+    l2:cmp bl,01              ;if r=1
+       jne l3
+       add res,al
+       ret
+
+    l3:dec al                  ;if n=r+1
+       cmp al,bl
+       jne l4
+       inc al
+       add res,al
+       ret
+                               
+    l4:push ax              ;ncr=ncr-1+n-1cr-1
+       push bx
+       call ncr
+       pop bx
+       pop ax
+       dec bx
+       push ax
+       push bx
+       call ncr
+       pop bx
+       pop ax
+       ret
+       ncr endp
+
+    code ends
+    end start

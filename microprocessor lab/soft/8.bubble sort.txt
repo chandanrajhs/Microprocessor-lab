@@ -1,0 +1,33 @@
+;program to sort n bytes of data using bubble sort
+data segment
+   a db 50h,20h,40h,10h,30h
+   cnt equ($-a)
+
+data ends
+
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+       mov ds,ax
+
+       mov bl,cnt     ;i=cnt
+       dec bl         ;i--
+
+   l1:lea si,a
+      mov cl,bl       ;j=i
+
+   top:mov al,[si]
+       inc si
+       cmp al,[si]
+       jle skip       ;a[j-1]>a[j]
+       xchg al,[si]
+       xchg al,[si-1]
+
+   skip:dec cl        ;j--
+        jnz top
+        dec bl
+        jnz l1
+        int 3h
+
+      code ends
+      end start

@@ -1,0 +1,40 @@
+;multiplication of 2 double prcision numbers
+
+data segment
+    m1 dw 0003h,0000h
+    m2 dw 0003h,0000h
+    ans dw 4 dup(00h)
+data ends
+
+code segment
+     assume cs:code,ds:data
+     start:mov ax,data
+           mov ds,ax
+
+           mov ax,m1           
+           mul m2                ;m1(l)*m2(l)
+           mov ans,ax
+           mov ans+2,dx
+
+           mov ax,m1+2          
+           mul m2                ;m1(h)*m2(l)
+           add ans+2,ax
+           adc ans+4,dx
+           adc ans+6,00
+
+           mov ax,m1
+           mul m2+2             ;m1(l)*m2(h)
+           add ans+2,ax
+           adc ans+4,dx
+           adc ans+6,00
+
+           mov ax,m1+2          ;m1(h)*m2(h)
+           mul m2+2
+           add ans+4,ax
+           adc ans+6,dx
+
+           int 3h
+
+           code ends
+           end start
+

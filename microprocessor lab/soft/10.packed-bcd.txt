@@ -1,0 +1,58 @@
+;stored packed bcd and find its sum. dispaly result in packed bcd form
+
+data segment
+     bcd db 78h,36h
+     n db 2
+data ends
+
+
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+       mov ds,ax
+
+       mov si,offset bcd
+       mov cl,n              ;count=n
+       mov ax,0000h          ;ax=00
+
+ again:mov bl,[si]           
+       add al,bl             ;sum+=bcd[0] 	     
+       daa                   ;convert binary to packed bcd
+       jnc t1		     
+       inc ah		     
+
+
+  t1:inc si                  ;increment si to point to next location          
+     loop again              ;decrement count 
+     call disp
+     mov ah,4ch
+     int 21h
+
+
+     disp proc near
+				;al contains packed bcd
+     mov cl,04			;cl=4
+     mov bh,al
+
+     shr bh,cl			;mov higher nibble to lower nibble
+     mov bl,al
+     and bl,0fh			;mask higher nible
+     add bx,3030h		;convert to ascii
+
+     add ah,30h			
+     mov dl,ah                  
+     mov ah,02h                 ;display bcd digit at 100 place
+     int 21h
+
+     mov dl,bh			;display bcd digit at 10 place
+     mov ah,02h
+     int 21h
+
+     mov dl,bl			;display bcd digit at unit place
+     int 21h
+     ret
+     disp endp
+
+     code ends
+     end start
+

@@ -1,0 +1,34 @@
+; Generating fibonaci series.
+;output:address 0002h
+
+data segment
+    n db 9
+    even 
+    fib db 20h dup(?)
+data ends
+
+code segment
+    assume cs:code,ds:data
+    start:mov ax,data
+          mov ds,ax
+          lea si,fib
+          mov cl,n      ;cl=count
+          mov al,0      ;fib1=0
+
+          mov bl,1      ;fib2=1
+          mov [si],al 
+          inc si        ;update the si valuew to point next memory address
+          dec cl        ;count--
+          mov [si],bl
+          inc si        ;i++
+          dec cl        ;count--
+
+    top:  mov al,[si-1] ;
+          add al,[si-2] ;fib3=fib1+fib2
+          mov [si],al   ;
+          inc si        ;increment si to get next address
+          dec cl        ;count--
+          jnz top
+          int 3h
+code ends
+end start

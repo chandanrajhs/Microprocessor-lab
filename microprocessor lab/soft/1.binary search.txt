@@ -1,0 +1,45 @@
+;binary search of 16 bit numbers
+
+data  segment
+	res dw  ?
+	a dw 1111h,2222h,3333h,4444h,5555h
+	len dw 5
+	key dw 2222h
+data ends
+
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+       mov ds,ax
+
+       mov bx,01        ;low=1
+       mov cx,key  
+       mov dx,len       ;high=length
+
+assign: cmp bx,dx       ;comparision of low=high
+        ja fail
+        mov si,0000h
+
+        mov ax,bx       ;ax=low
+        add ax,dx       ;ax=low+high 
+        shr ax,1        ;ax=(low+high)/2
+
+        mov si,ax
+        dec si
+        add si,si
+        cmp cx,a[si]   ;key=a[mid]
+        je yes
+        ja big
+        dec ax         ;high=mid-1
+        mov dx,ax
+        jmp assign
+big:	inc ax         ;low=mid+1
+    	mov bx,ax
+    	jmp assign
+fail:	mov res,0000h  ;key not found
+     	jmp assign
+yes:	mov res,9999h  ;key found
+stop:	int 3h
+    
+code ends
+end start

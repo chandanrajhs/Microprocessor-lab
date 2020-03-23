@@ -1,0 +1,40 @@
+; program 1b 
+data segment
+        pa equ 0c800h
+        pctrl equ 0c803h
+data ends
+code segment
+assume cs:code , ds:data
+        start:  mov ax,data
+                mov ds,ax
+                mov al,80h
+                mov dx,pctrl
+                out dx,al
+                mov al,07
+            top:mov dx,pa
+                out dx,al
+                mov bl,al
+                mov ah,01h
+                int 21h
+                ;cmp al,58h
+                cmp al,'Q'
+                je stop
+                call delay
+                mov al,bl
+                rol al,01
+                jmp top
+                delay proc near
+                mov si,1234h
+            t2: mov di,0ffffh
+            t1: dec di
+                jnz t1
+                dec si
+                jnz t2
+                ret
+                delay endp
+
+
+           stop:mov ah,4ch
+                int 21h
+code ends
+end start

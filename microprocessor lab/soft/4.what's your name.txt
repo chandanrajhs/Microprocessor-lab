@@ -1,0 +1,50 @@
+;read your name and display it in front of "what is your name?"
+
+  strread macro loc
+          mov ah,01h                     ;read charecters
+          int 21h
+          mov loc,al
+    endm
+
+    data segment
+         m1 db "What is your name?$"
+         arr db 20 dup(?)
+    data ends
+
+    code segment
+          assume cs:code,ds:data
+          start:mov ax,data
+                mov ds,ax
+     
+	        mov si,0h
+          loop1:strread arr[si]            ; macro call
+          	inc si
+          	cmp al,13                  ;13=odh(enter key)(end of input)
+          	jnz loop1
+          	mov arr[si],"$"             
+          	mov ah,00h
+          	mov al,03h
+          	int 10h
+
+          	mov ah,02h
+          	mov bh,00h
+
+	        mov dh,02h                ; x-axis 
+        	mov dl,02h                ; y-axis
+ 	        int 10h
+
+       	   	lea dx,m1                 ;display question
+        	mov ah,09h
+          	int 21h
+
+	        mov si,0h
+        	lea dx,arr[si]            ;display input string
+          	mov ah,09h
+          	int 21h
+
+	        mov ah,4ch
+        	int 21h
+
+    code ends
+    end start
+

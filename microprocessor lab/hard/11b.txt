@@ -1,0 +1,68 @@
+;Elevator
+data segment
+val1 db 03
+val2 db 01
+
+pctrl equ 0c803h
+pa equ 0c800h
+pb equ 0c801h
+flor db 00,03,06,09,0e0h,0d3h,0b6h,79h
+data ends
+code segment
+assume cs:code,ds:data
+    start:mov ax,data
+          mov ds,ax
+          mov dx,pctrl
+          mov al,82h
+
+          out dx,al
+          lea si,flor
+
+          mov bl,00
+          mov dx,pa
+          mov al,bl
+          or al,0f0h
+          out dx,al    ;elevator in the ground floor
+
+          mov al,val1
+          mul val2
+          cmp al,00
+          jz move
+          cmp al,03
+          jz move
+          cmp al,06
+          jz move
+          cmp al,09
+          jz move
+          jmp stop
+    move:inc bl        ;the requested floor
+         mov bh,al
+         mov al,bl
+         or al,0f0h
+         mov dx,pa
+         out dx,al
+         call delay
+         cmp bl,bh
+         jnz move
+down:    dec bl       ;move ele down until it reaches ground floor
+         cmp bl,0ffh
+         jz stop
+         mov al,bl
+         or al,0f0h
+         mov dx,pa
+         out dx,al
+         call delay
+         jmp down
+ stop:   mov ah,4ch
+         int 21h
+      delay proc near
+        mov cx,0ffffh
+   t1:  mov di,0ffffh
+   t:     dec di
+         jnz t
+         loop t1
+          ret
+          delay endp
+          code ends
+          end start
+

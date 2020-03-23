@@ -1,0 +1,61 @@
+; To multiply 2 two digit unpacked BCD numbers
+ data segment
+  a db 03h,02h
+  b db 06h,04h
+  c db 4 dup(00h)
+  c0 db 4 dup(00h)
+  c1 db 4 dup(00h)
+
+data ends
+
+
+code segment
+assume cs:code,ds:data
+start:mov ax,data
+      mov ds,ax
+
+      mov ah,00h
+      mov al,a               
+      mul b                  ;multiply a and b
+      aam                    ;convert binary to unpacked BCD
+      mov word ptr c0,ax     ; store the content of ax starting from c0
+
+      mov al,a+1
+      mul b                  ;multiply a+1 and b
+      aam                    ;convert binary to unpacked BCD
+      add al,c0+1
+      aaa
+      mov word ptr c0+1,ax    ; store the content of ax starting from c0+1
+      mov al,a
+      mul b+1
+      aam
+
+      mov word ptr c1,ax      ; store the content of ax starting from c1
+      mov al,a+1
+      mul b+1                 
+      aam
+      add al,c1+1
+      aaa
+
+      mov word ptr c1+1,ax     ; store the content of ax starting from c1+1
+      mov al,c0
+      mov c,al                  ;store unit place bcd digit at location c
+      mov al,c0+1
+      add al,c1                
+      aaa                       ;convert to unpacked BCD after addition
+
+
+      mov c+1,al                ; store 10th place bcd digit at location c+1
+      mov al,c0+2
+      adc al,c1+1
+      aaa
+
+      mov c+2,al               ; store 100th place bcd digit at location c+2
+      mov al,c1+2
+      adc al,00
+      aaa                     ;store 1000nd place bcd digit at location c+3 
+      mov c+3,al
+      int 3h
+
+      code ends
+      end start
